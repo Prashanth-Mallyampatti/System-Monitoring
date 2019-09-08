@@ -1,2 +1,4 @@
-Timestamp   Alert Message   1 min load average  5 min load average  15 min load average
----------   -------------   ------------------  ------------------  ------------------
+Timestamp   Alert Message         1 min load average  5 min load average  15 min load average
+---------   -------------------   ------------------  ------------------  -------------------
+ 22:46:18   HIGH CPU usage 		 0.00 		 0.00 			  0.00
+ 22:46:18   Very HIGH CPU usage 	 0.00 		 0.00 			  0.00
