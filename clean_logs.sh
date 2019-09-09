@@ -4,8 +4,11 @@ set -e
 
 MONITORING_DIR="/var/log/monitoring"
 
-if [ -d "$MONITORING_DIR" ]
-then
-#	sleep 10
-	rm -r $MONITORING_DIR
-fi
+while true
+do
+	sleep 2m
+	if [ -d "$MONITORING_DIR" ]
+	then
+		rm -r $MONITORING_DIR
+	fi
+done
