@@ -104,5 +104,5 @@ do
 	log_cpu_loads
 	check_cpu_usage
 	sleep $T
-	TP=$[TP-1]
+	TP=$((TP-T))
 done
