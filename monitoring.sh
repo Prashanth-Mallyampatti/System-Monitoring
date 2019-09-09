@@ -2,13 +2,18 @@
 
 set -e
 
+# Command line arguments
 T=$1
 TP=$2
 X=$3
 Y=$4
-CPU_LOG_FILE="cpu_log.csv"
-ALERT_LOG_FILE="alert_log_file.csv"
 
+# Log Files
+MONITORING_DIR="/var/log/monitoring"
+CPU_LOG_FILE="$MONITORING_DIR/cpu_log.csv"
+ALERT_LOG_FILE="$MONITORING_DIR/alert_log_file.csv"
+
+# Create Log files
 get_file()
 {
 	if [ -f "$1" ] 
@@ -23,6 +28,7 @@ get_file()
 	fi
 }
 
+# Update headers of the log files
 update_file_headers()
 {
 	if [ $1 = $CPU_LOG_FILE ]
@@ -38,6 +44,7 @@ update_file_headers()
 	fi
 }
 
+# Get all the monitoring values
 get_values()
 {
 	UPTIME="$(uptime)"
@@ -48,14 +55,17 @@ get_values()
 	FIFTEEN_MIN=$(echo $LOAD_AVERAGES | awk '{print $3}')
 }
 
+# Log CPU loads onto the log file
 log_cpu_loads()
 {
 	get_file "$CPU_LOG_FILE"
 	echo -e " $TIMESTAMP \t  $ONE_MIN \t\t    $FIVE_MIN \t\t  $FIFTEEN_MIN" >> $CPU_LOG_FILE
 }
 
+# Check for CPU usage and generate alerts
 check_cpu_usage()
 {
+	echo
 	if [[ ${ONEMIN%.*} -ge $X ]]
 	then
 		echo "HIGH CPU usage [ $ONE_MIN ] recorded at $TIMESTAMP"
@@ -69,6 +79,7 @@ check_cpu_usage()
 	fi
 }
 
+# Log the generated alerts
 log_alerts()
 {
 	get_file "$ALERT_LOG_FILE"
@@ -80,12 +91,18 @@ log_alerts()
 	fi
 }
 
+################# Main #####################
+
+if [ ! -d "$MONITORING_DIR" ]
+then
+	mkdir $MONITORING_DIR
+fi	
+
 while [ $TP -gt 0 ] && [ $T -gt 0 ]
 do
 	get_values
 	log_cpu_loads
+	check_cpu_usage
 	sleep $T
 	TP=$[TP-1]
 done
-
-check_cpu_usage
