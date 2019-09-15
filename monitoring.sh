@@ -72,15 +72,15 @@ check_cpu_usage()
 	if [[ ${ONE_MIN%.*} -ge $X ]]
 	then
 		echo
-		echo "HIGH CPU usage [ $ONE_MIN ] recorded at $TIMESTAMP"
-		log_alerts "$TIMESTAMP" "HIGH CPU usage" "$ONE_MIN" "$FIVE_MIN" "$FIFTEEN_MIN"
+		echo "HIGH CPU usage [ $ONE_MIN_AVG ] average recorded at $TIMESTAMP"
+		log_alerts "$TIMESTAMP" "HIGH CPU usage" "$ONE_MIN_AVG" "$FIVE_MIN_AVG" "$FIFTEEN_MIN_AVG"
 	fi
 
 	if [[ ${FIVE_MIN%.*} -ge $Y ]] && [[ ${ONE_MIN%.*} -ge $Y ]]
 	then
 		echo
-		echo "Very HIGH CPU usage [ $FIVE_MIN ] recorded at $TIMESTAMP"
-		log_alerts "$TIMESTAMP" "Very HIGH CPU usage" "$ONE_MIN" "$FIVE_MIN" "$FIFTEEN_MIN"
+		echo "Very HIGH CPU usage [ $FIVE_MIN_AVG ] average recorded at $TIMESTAMP"
+		log_alerts "$TIMESTAMP" "Very HIGH CPU usage" "$ONE_MIN_AVG" "$FIVE_MIN_AVG" "$FIFTEEN_MIN_AVG"
 	fi
 }
 
