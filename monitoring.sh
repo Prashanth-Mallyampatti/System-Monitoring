@@ -12,6 +12,7 @@ Y=$4
 MONITORING_DIR="/var/log/monitoring"
 CPU_LOG_FILE="$MONITORING_DIR/cpu_log.csv"
 ALERT_LOG_FILE="$MONITORING_DIR/alert_log_file.csv"
+CPU_CORE=`nproc --all`
 
 # Create Log files
 get_file()
@@ -50,30 +51,34 @@ get_values()
 	UPTIME="$(uptime)"
 	TIMESTAMP="$(echo $UPTIME | sed 's/ .*//')"
 	LOAD_AVERAGES="$(echo $UPTIME | awk -F 'load average: ' '{print $2}')"
-	ONE_MIN=$(echo $LOAD_AVERAGES | awk '{print $1}' | sed 's/,//g')
-	FIVE_MIN=$(echo $LOAD_AVERAGES | awk '{print $2}' | sed 's/,//g')
-	FIFTEEN_MIN=$(echo $LOAD_AVERAGES | awk '{print $3}')
+	ONE_MIN=$(echo $LOAD_AVERAGES | awk '{print $1*100}' | sed 's/,//g')
+	FIVE_MIN=$(echo $LOAD_AVERAGES | awk '{print $2*100}' | sed 's/,//g')
+	FIFTEEN_MIN=$(echo $LOAD_AVERAGES | awk '{print $3*100}')
 }
 
 # Log CPU loads onto the log file
 log_cpu_loads()
 {
 	get_file "$CPU_LOG_FILE"
-	echo -e " $TIMESTAMP \t  $ONE_MIN \t\t    $FIVE_MIN \t\t  $FIFTEEN_MIN" >> $CPU_LOG_FILE
+	ONE_MIN_AVG=$(echo "$ONE_MIN/100" | awk -F "/" '{printf "%.2f", ($1/$2)}')
+	FIVE_MIN_AVG=$(echo "$FIVE_MIN/100" | awk -F "/" '{printf "%.2f", ($1/$2)}')
+	FIFTEEN_MIN_AVG=$(echo "$FIFTEEN_MIN/100" | awk -F "/" '{printf "%.2f", ($1/$2)}')
+	echo -e " $TIMESTAMP \t  $ONE_MIN_AVG \t\t    $FIVE_MIN_AVG  \t\t  $FIFTEEN_MIN_AVG" >> $CPU_LOG_FILE
 }
 
 # Check for CPU usage and generate alerts
 check_cpu_usage()
 {
-	echo
-	if [[ ${ONEMIN%.*} -ge $X ]]
+	if [[ ${ONE_MIN%.*} -ge $X ]]
 	then
+		echo
 		echo "HIGH CPU usage [ $ONE_MIN ] recorded at $TIMESTAMP"
 		log_alerts "$TIMESTAMP" "HIGH CPU usage" "$ONE_MIN" "$FIVE_MIN" "$FIFTEEN_MIN"
 	fi
 
 	if [[ ${FIVE_MIN%.*} -ge $Y ]] && [[ ${ONE_MIN%.*} -ge $Y ]]
 	then
+		echo
 		echo "Very HIGH CPU usage [ $FIVE_MIN ] recorded at $TIMESTAMP"
 		log_alerts "$TIMESTAMP" "Very HIGH CPU usage" "$ONE_MIN" "$FIVE_MIN" "$FIFTEEN_MIN"
 	fi
