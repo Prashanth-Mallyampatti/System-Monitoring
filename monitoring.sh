@@ -93,6 +93,13 @@ log_alerts()
 
 ################# Main #####################
 
+if [ $# -lt 4 ]
+then
+	echo "Please enter 4 arguments in the format: T TP X Y"
+	echo "Exiting with error code: 1"
+	exit 1
+fi
+
 if [ ! -d "$MONITORING_DIR" ]
 then
 	mkdir $MONITORING_DIR
