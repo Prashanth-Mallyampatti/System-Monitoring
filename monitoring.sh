@@ -13,6 +13,8 @@ MONITORING_DIR="/var/log/monitoring"
 CPU_LOG_FILE="$MONITORING_DIR/cpu_log.csv"
 ALERT_LOG_FILE="$MONITORING_DIR/alert_log_file.csv"
 CPU_CORE=`nproc --all`
+X=$(( $X * $CPU_CORE ))
+Y=$(( $Y * $CPU_CORE ))
 
 # Create Log files
 get_file()
@@ -109,6 +111,9 @@ if [ ! -d "$MONITORING_DIR" ]
 then
 	mkdir $MONITORING_DIR
 fi	
+
+echo -e "\n$CPU_CORE CPU cores identified."
+echo "Applying X=$X% [$CPU_CORE * $3] and Y=$Y% [$CPU_CORE * $4] thresholds on load average of all cores"
 
 while [ $TP -gt 0 ] && [ $T -gt 0 ]
 do
