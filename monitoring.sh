@@ -15,6 +15,8 @@ ALERT_LOG_FILE="$MONITORING_DIR/alert_log_file.csv"
 CPU_CORE=`nproc --all`
 X=$(( $X * $CPU_CORE ))
 Y=$(( $Y * $CPU_CORE ))
+FLAG1=0
+FLAG2=0
 
 # Create Log files
 get_file()
@@ -74,15 +76,23 @@ check_cpu_usage()
 	if [[ ${ONE_MIN%.*} -ge $X ]]
 	then
 		echo
-		echo "HIGH CPU usage [ $ONE_MIN_AVG ] average recorded at $TIMESTAMP"
+		echo "HIGH CPU usage: $ONE_MIN% [$ONE_MIN_AVG - last 1 min average] recorded at $TIMESTAMP"
 		log_alerts "$TIMESTAMP" "HIGH CPU usage" "$ONE_MIN_AVG" "$FIVE_MIN_AVG" "$FIFTEEN_MIN_AVG"
+		if [ $FLAG1 -eq 0 ]
+		then
+			FLAG1=1
+		fi
 	fi
 
 	if [[ ${FIVE_MIN%.*} -ge $Y ]] && [[ ${ONE_MIN%.*} -ge $Y ]]
 	then
 		echo
-		echo "Very HIGH CPU usage [ $FIVE_MIN_AVG ] average recorded at $TIMESTAMP"
+		echo "Very HIGH CPU usage: $FIVE_MIN% [$FIVE_MIN_AVG - last 5 min average] recorded at $TIMESTAMP"
 		log_alerts "$TIMESTAMP" "Very HIGH CPU usage" "$ONE_MIN_AVG" "$FIVE_MIN_AVG" "$FIFTEEN_MIN_AVG"
+		if [ $FLAG2 -eq 0 ]
+		then
+			FLAG2=1
+		fi
 	fi
 }
 
@@ -114,7 +124,7 @@ fi
 
 echo -e "\n$CPU_CORE CPU cores identified."
 echo "Applying X=$X% [$CPU_CORE * $3] and Y=$Y% [$CPU_CORE * $4] thresholds on load average of all cores"
-
+echo -e "\nLogging CPU usage.."
 while [ $TP -gt 0 ] && [ $T -gt 0 ]
 do
 	get_values
@@ -123,3 +133,11 @@ do
 	sleep $T
 	TP=$((TP-T))
 done
+if [ $FLAG1 -eq 0 ]
+then
+	echo -e "\nNo HIGH CPU usage seen since $2 seconds"
+fi
+if [ $FLAG2 -eq 0 ]
+then
+	echo -e "\nNo Very HIGH CPU usage seen since $2 seconds"
+fi
