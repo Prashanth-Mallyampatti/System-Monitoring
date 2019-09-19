@@ -84,7 +84,7 @@ check_cpu_usage()
 		fi
 	fi
 
-	if [[ ${FIVE_MIN%.*} -ge $Y ]] && [[ ${ONE_MIN%.*} -ge $Y ]]
+	if [[ ${FIVE_MIN%.*} -ge $Y ]] && [[ ${ONE_MIN%.*} -ge ${FIVE_MIN%.*} ]]
 	then
 		echo
 		echo "Very HIGH CPU usage: $FIVE_MIN% [$FIVE_MIN_AVG - last 5 min average] recorded at $TIMESTAMP"
