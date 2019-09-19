@@ -110,9 +110,9 @@ log_alerts()
 
 ################# Main #####################
 
-if [ $# -lt 4 ]
+if [[ $# -lt 4 ]] || [[ $2 -lt $1 ]]
 then
-	echo "Please enter 4 arguments in the format: T TP X Y"
+	echo "Please enter 4 arguments in the format: T TP X Y where TP>=T"
 	echo "Exiting with error code: 1"
 	exit 1
 fi
